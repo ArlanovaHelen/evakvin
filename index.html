@@ -23,7 +23,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://evakvin.com.ua/">
 <meta property="og:locale" content="uk_UA">
-<meta property="og:image" content="https://evakvin.com.ua/images/logo.jpg">
+<meta property="og:image" content="https://evakvin.com.ua/images/logo.png">
 
 <!-- Structured Data for Local Business (Google) -->
 <script type="application/ld+json">
@@ -32,7 +32,7 @@
   "@type": "LocalBusiness",
   "name": "EvakVin - Евакуатор Вінниця",
   "description": "Служба евакуації автомобілів у Вінниці та Вінницькій області. Працюємо 24/7.",
-  "image": "https://evakvin.com.ua/images/logo.jpg",
+  "image": "https://evakvin.com.ua/images/logo.png",
   "telephone": "+380977593507",
   "url": "https://evakvin.com.ua",
   "address": {
@@ -1846,7 +1846,7 @@ section {
   <div class="footer-content">
     <div class="footer-brand">
       <div class="footer-logo">
-        <img src="images/logo.jpg" alt="EvakVin Евакуатор Вінниця - виклик евакуатора 24/7 телефон 097-759-35-07" class="footer-logo-img">
+        <img src="images/logo.png" alt="EvakVin Евакуатор Вінниця - виклик евакуатора 24/7 телефон 097-759-35-07" class="footer-logo-img">
       </div>
       </div>
 
@@ -1899,7 +1899,6 @@ const PRICING = {
   truck: { city: 3000, perKm: 40, name: 'Буси великі, трактори' }
 };
 const ROLLER_PRICE = 500;
-const CITY_RADIUS_KM = 15; // Radius considered "within city"
 
 // Vinnytsia center coordinates
 const VINNYTSIA_CENTER = { lat: 49.2331, lon: 28.4682 };
@@ -1987,6 +1986,25 @@ async function geocodeAddress(address) {
   } catch (e) {
     console.error('Geocode error:', e);
     return null;
+  }
+}
+
+// Check if coordinates are within Vinnytsia city
+async function checkIfVinnytsia(lat, lon) {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&accept-language=uk`,
+      { headers: { 'User-Agent': 'EvakVin/1.0' } }
+    );
+    const data = await response.json();
+    if (data && data.address) {
+      const city = data.address.city || data.address.town || '';
+      return city.toLowerCase().includes('вінниц');
+    }
+    return false;
+  } catch (e) {
+    console.error('City check error:', e);
+    return false;
   }
 }
 
@@ -2085,7 +2103,10 @@ calcBtn.addEventListener('click', async () => {
   const type = vehicleType.value;
   const withRoller = needRoller.checked;
   const pricing = PRICING[type];
-  const isCity = distance <= CITY_RADIUS_KM;
+
+  // Check if location is actually in Vinnytsia city
+  calcLocationType.textContent = 'Перевіряємо локацію...';
+  const isCity = await checkIfVinnytsia(pickupCoords.lat, pickupCoords.lon);
 
   let total, breakdown;
 
