@@ -1,0 +1,5 @@
+# EvakVin - Евакуатор Вінниця
+User-agent: *
+Allow: /
+
+Sitemap: https://evakvin.com.ua/sitemap.xml

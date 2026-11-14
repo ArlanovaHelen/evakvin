@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files (if ever needed)
+.env
+.env.*
+.env.local
+
+# Dependencies (if ever needed)
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Local instructions (not needed in repo)
+instructions.txt
